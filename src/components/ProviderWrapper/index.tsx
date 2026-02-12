@@ -6,7 +6,6 @@ import { getUser } from "@/src/utils/auth";
 
 export default function ProviderWrapper({ children }: { children: React.ReactNode }) {
     const currentUser = getUser();
-    console.log(currentUser)
     return <Provider store={store}>
             {currentUser && <Navbar />}
             {children}

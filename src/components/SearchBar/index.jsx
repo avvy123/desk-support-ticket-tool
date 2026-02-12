@@ -5,7 +5,7 @@ export default function SearchBar({ value, onChange }) {
             placeholder="Search tickets..."
             value={value}
             onChange={onChange}
-            className="w-full border p-2 rounded mb-4"
+            className="flex-1 border rounded-xl p-2 text-gray-900"
         />
     );
 }

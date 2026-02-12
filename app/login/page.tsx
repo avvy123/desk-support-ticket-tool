@@ -8,15 +8,22 @@ import loginbackGround from "../../src/images/login-background.png"
 import customerSupportIcon from "../../src/images/customer_support_icon.svg"
 import toast from "react-hot-toast";
 
+export interface LoginFormData {
+    email: string;
+    password: string;
+}
+
 export default function LoginPage() {
     const router = useRouter();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [loginFormData, setLoginFormData] = useState<LoginFormData>({
+        email: "",
+        password: ""
+    })
     const [error, setError] = useState("");
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            login(email, password);
+            login(loginFormData.email, loginFormData.password);
             router.push("/dashboard");
             router.refresh();
             toast.success("Login successfully");
@@ -44,8 +51,8 @@ export default function LoginPage() {
                         <EnvelopeIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-900" />
                         <input
                             type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={loginFormData.email}
+                            onChange={(e) => setLoginFormData({...loginFormData, email: e.target.value})}
                             placeholder="Email"
                             className="w-full border border-gray-300 rounded-xl py-2 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                             required
@@ -56,8 +63,8 @@ export default function LoginPage() {
                         <LockClosedIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-900" />
                         <input
                             type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={loginFormData.password}
+                            onChange={(e) => setLoginFormData({...loginFormData, password: e.target.value})}
                             placeholder="Password"
                             className="w-full border border-gray-300 rounded-xl py-2 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                             required
@@ -91,7 +98,6 @@ export default function LoginPage() {
                         Sign Up
                     </button>
                 </p>
-
 
                 <p className="text-center text-gray-400 text-xs mt-4">
                     © 2026 deskSupport. All rights reserved.

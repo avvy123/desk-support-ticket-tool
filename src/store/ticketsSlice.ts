@@ -23,7 +23,7 @@ const getCurrentUserEmail = () => {
 const initialTickets: Ticket[] = [
   {
     id: "1",
-    title: "Login Issue ffwe",
+    title: "Login Issue",
     description: "Cannot login to dashboard fwww",
     status: "open",
     raisedBy: getCurrentUserEmail(),
@@ -36,15 +36,42 @@ const initialTickets: Ticket[] = [
     status: "open",
     raisedBy: getCurrentUserEmail(),
     assignedTo: "mohan@gmail.com",
+  },
+  {
+    id: "3",
+    title: "Production Issue",
+    description: "Production page is not loading",
+    status: "open",
+    raisedBy: getCurrentUserEmail(),
+    assignedTo: "unknown@gmail.com",
+  },
+  {
+    id: "4",
+    title: "Laptop Issue",
+    description: "Laptop is not working",
+    status: "in-progress",
+    raisedBy: getCurrentUserEmail(),
+    assignedTo: "unkown@gmail.com",
+  },{
+    id: "5",
+    title: "Laptop battery issue",
+    description: "Battery drainage very fastly",
+    status: "in-progress",
+    raisedBy: getCurrentUserEmail(),
+    assignedTo: "unknown@gmail.com",
   }
 ];
 
 const getTicketsFromStorage = (): Ticket[] => {
   const stored = localStorage.getItem("tickets");
-  if (!stored) {
+  
+  // If no tickets in storage or a reset flag is true, use initialTickets
+  if (!stored || localStorage.getItem("resetTickets") === "true") {
     localStorage.setItem("tickets", JSON.stringify(initialTickets));
+    localStorage.removeItem("resetTickets");
     return initialTickets;
   }
+
   return JSON.parse(stored);
 };
 

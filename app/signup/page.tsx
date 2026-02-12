@@ -8,18 +8,27 @@ import loginbackGround from "../../src/images/login-background.png"
 import customerSupportIcon from "../../src/images/customer_support_icon.svg"
 import toast from "react-hot-toast";
 
+export interface SignupForm {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+}
+
 export default function SignUpPage() {
     const router = useRouter();
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [formData, setFormData] = useState<SignupForm>({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: ""
+    });
     const [error, setError] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await signup(firstName, lastName, email, password);
+            await signup(formData.firstName, formData.lastName, formData.email, formData.password);
             toast.success("Account created successfully");
             router.push("/login");
         } catch (err: any) {
@@ -44,8 +53,8 @@ export default function SignUpPage() {
                         <UserCircleIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-900" />
                         <input
                             type="text"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
+                            value={formData.firstName}
+                            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                             placeholder="Firstname"
                             className="w-full border border-gray-300 rounded-xl py-2 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                             required
@@ -56,8 +65,8 @@ export default function SignUpPage() {
                         <UserCircleIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-900" />
                         <input
                             type="lastname"
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
+                            value={formData.lastName}
+                            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                             placeholder="Lastname"
                             className="w-full border border-gray-300 rounded-xl py-2 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                             required
@@ -68,8 +77,8 @@ export default function SignUpPage() {
                         <EnvelopeIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-900" />
                         <input
                             type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             placeholder="Email"
                             className="w-full border border-gray-300 rounded-xl py-2 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                             required
@@ -80,8 +89,8 @@ export default function SignUpPage() {
                         <LockClosedIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-900" />
                         <input
                             type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={formData.password}
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                             placeholder="Password"
                             className="w-full border border-gray-300 rounded-xl py-2 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                             required
