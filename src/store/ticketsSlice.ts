@@ -10,9 +10,15 @@ export interface Ticket {
 }
 
 const getCurrentUserEmail = () => {
-  const user = JSON.parse(localStorage.getItem("currentUser") || "null");
+  if (typeof window === "undefined") return null;
+
+  const user = JSON.parse(
+    localStorage.getItem("currentUser") || "null"
+  );
+
   return user?.email || "unknown@gmail.com";
 };
+
 
 const initialTickets: Ticket[] = [
   {

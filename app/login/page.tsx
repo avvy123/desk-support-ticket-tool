@@ -15,8 +15,9 @@ export default function LoginPage() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            login(email, password);      // synchronous
-            router.push("/dashboard");   // go to dashboard
+            login(email, password);
+            router.push("/dashboard");
+            router.refresh();
         } catch (err: any) {
             setError(err.message);
         }
@@ -28,19 +29,15 @@ export default function LoginPage() {
             style={{ backgroundImage: `url(${loginbackGround.src})` }}
         >
 
-            {/* Centered login form */}
             <div className="relative z-10 w-full max-w-md p-8 bg-white rounded-2xl shadow-lg">
-                {/* Logo */}
                 <div className="flex items-center justify-center mb-6 space-x-2">
                     <img src={customerSupportIcon.src} alt="Logo" className="w-10 h-10" />
                     <span className="text-2xl font-bold text-blue-600">deskSupport</span>
                 </div>
 
-                {/* Form */}
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     {error && <p className="text-red-500 text-center">{error}</p>}
 
-                    {/* Email */}
                     <div className="relative">
                         <EnvelopeIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-900" />
                         <input
@@ -53,7 +50,6 @@ export default function LoginPage() {
                         />
                     </div>
 
-                    {/* Password */}
                     <div className="relative">
                         <LockClosedIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-900" />
                         <input
@@ -66,7 +62,6 @@ export default function LoginPage() {
                         />
                     </div>
 
-                    {/* Forgot Password */}
                     <div className="flex justify-end">
                         <button
                             type="button"
@@ -77,7 +72,6 @@ export default function LoginPage() {
                         </button>
                     </div>
 
-                    {/* Submit Button */}
                     <button
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition"
@@ -86,7 +80,6 @@ export default function LoginPage() {
                     </button>
                 </form>
 
-                {/* Sign Up */}
                 <p className="text-center text-gray-500 text-sm mt-4">
                     Don’t have an account?{" "}
                     <button
@@ -98,7 +91,6 @@ export default function LoginPage() {
                 </p>
 
 
-                {/* Footer */}
                 <p className="text-center text-gray-400 text-xs mt-4">
                     © 2026 deskSupport. All rights reserved.
                 </p>

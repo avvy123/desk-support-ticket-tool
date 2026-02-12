@@ -11,7 +11,6 @@ import {
 } from "../../src/store/ticketsSlice";
 import { getUser, logout } from "../../src/utils/auth";
 import TicketCard from "../../src/components/TicketCard";
-import Navbar from "@/src/components/Navbar";
 
 export default function Dashboard() {
   const dispatch = useDispatch();
@@ -50,8 +49,6 @@ export default function Dashboard() {
     }
   }, [dispatch, router]);
 
-  /* ================= FILTER ================= */
-
   const filteredTickets = tickets.filter((t: any) => {
     const isVisible =
       t.raisedBy === user?.email ||
@@ -67,8 +64,6 @@ export default function Dashboard() {
 
     return isVisible && matchesSearch && matchesStatus;
   });
-
-  /* ================= CREATE / UPDATE ================= */
 
   const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,16 +111,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar
-        userName={user?.firstName}
-        onLogout={() => {
-          logout();
-          router.push("/login");
-        }}
-      />
-
       <div className="p-6">
-        {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
             Tickets Dashboard
@@ -139,7 +125,6 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* SEARCH + FILTER */}
         <div className="flex gap-4 mb-6">
           <input
             type="text"
@@ -163,7 +148,6 @@ export default function Dashboard() {
           </select>
         </div>
 
-        {/* TICKETS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTickets.map((ticket: any) => (
             <TicketCard
@@ -188,7 +172,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
           <div className="bg-white p-6 rounded-2xl w-full max-w-md shadow-xl">
