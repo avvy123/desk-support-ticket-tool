@@ -6,6 +6,7 @@ import { signup } from "../../src/utils/auth";
 import { EnvelopeIcon, LockClosedIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import loginbackGround from "../../src/images/login-background.png"
 import customerSupportIcon from "../../src/images/customer_support_icon.svg"
+import toast from "react-hot-toast";
 
 export default function SignUpPage() {
     const router = useRouter();
@@ -19,6 +20,7 @@ export default function SignUpPage() {
         e.preventDefault();
         try {
             await signup(firstName, lastName, email, password);
+            toast.success("Account created successfully");
             router.push("/login");
         } catch (err: any) {
             setError(err.message);

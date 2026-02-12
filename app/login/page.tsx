@@ -6,6 +6,7 @@ import { login } from "../../src/utils/auth";
 import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import loginbackGround from "../../src/images/login-background.png"
 import customerSupportIcon from "../../src/images/customer_support_icon.svg"
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -18,6 +19,7 @@ export default function LoginPage() {
             login(email, password);
             router.push("/dashboard");
             router.refresh();
+            toast.success("Login successfully");
         } catch (err: any) {
             setError(err.message);
         }
