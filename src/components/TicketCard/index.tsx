@@ -2,6 +2,10 @@
 
 import { getUser } from "@/src/utils/auth";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
+import { getStatusBadge } from "@/src/utils/statusColor";
+import { getPriorityBadge } from "@/src/utils/priorityBadge";
+import { formatStatus } from "@/src/utils/formatStatusText";
 
 interface Props {
   ticket: any;
@@ -20,37 +24,23 @@ export default function TicketCard({
   onDelete,
   onEdit,
 }: Props) {
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "open":
-        return "bg-blue-600 text-white";
-      case "in-progress":
-        return "bg-yellow-700 text-white";
-      case "closed":
-        return "bg-green-600 text-white";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
-
-  const formatStatus = (status: string) => {
-    return status.charAt(0).toUpperCase() + status.slice(1);
-  };
 
   const currentUser = getUser();
+  const router = useRouter();
+  const handleTicketClick = () => {
+    router.push(`/tickets/${ticket.id}`)
+  }
 
   const canModify =
     ticket.raisedBy === currentUserEmail ||
     ticket.assignedTo === currentUserEmail || currentUser.role === "admin";
 
   return (
-    <div className="flex flex-col gap-1 bg-white rounded-2xl shadow hover:shadow-lg transition">
+    <div className="flex flex-col gap-1 bg-white rounded-2xl shadow hover:shadow-lg transition border-1 border-gray-400" onClick={handleTicketClick}>
       <div className="flex justify-between items-center px-3 py-4">
         <p
         className={`px-3 py-1 rounded-full font-medium text-sm ${
-        ticket.priority === "low" ? "bg-green-600 text-white text-center" :
-        ticket.priority === "medium" ? "bg-yellow-600 text-white" :
-        "bg-red-600 text-white"
+        getPriorityBadge(ticket.priority)
         }`}
       >
         {formatStatus(ticket.priority)}
@@ -64,15 +54,13 @@ export default function TicketCard({
           {formatStatus(ticket.status)}
         </span>
       </div>
-      <div className="px-3 py-4 border-t-1">
-        <h3 className="font-semibold text-lg text-gray-900">
+        <h3 className="font-semibold pl-3 py-4 pt-0 text-lg text-gray-900 border-b-1 border-black">
           {ticket.title}
         </h3>
 
-        <p className="text-gray-700">
+        <p className="text-gray-700 pl-3 py-4 pt-0">
           {ticket.description}
         </p>
-      </div>
       <div className="flex items-center justify-between px-3 py-4 text-sm text-gray-600 border-t-1">
        <div>
          <p>

@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { dummyTickets } from "../utils/mockticket";
 
 export interface Ticket {
   id: string;
@@ -99,9 +100,15 @@ const ticketsSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchTickets.fulfilled, (state, action) => {
-        state.tickets = action.payload;
-        state.loading = false;
-      })
+      state.loading = false;
+
+      state.tickets = action.payload.map((ticket: any, index: number) => ({
+        ...ticket,
+        title: dummyTickets[index]?.title || ticket.title,
+        description:
+          dummyTickets[index]?.description || ticket.description,
+      }))
+    })
       .addCase(fetchTickets.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch tickets";
