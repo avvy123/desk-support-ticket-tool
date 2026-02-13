@@ -24,10 +24,8 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
   const [userChecked, setUserChecked] = useState(false);
   const [user, setUser] = useState<any>(null);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTicket, setEditingTicket] = useState<any>(null);
-
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newStatus, setNewStatus] = useState<"open" | "in-progress" | "closed">("open");
