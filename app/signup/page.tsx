@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signup } from "../../src/utils/auth";
-import { EnvelopeIcon, LockClosedIcon, UserCircleIcon } from "@heroicons/react/24/outline";
+import { EnvelopeIcon, LockClosedIcon, ShieldCheckIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import loginbackGround from "../../src/images/login-background.png"
 import customerSupportIcon from "../../src/images/customer_support_icon.svg"
 import toast from "react-hot-toast";
@@ -24,11 +24,11 @@ export default function SignUpPage() {
         password: ""
     });
     const [error, setError] = useState("");
-
+    const [role, setRole] = useState<"admin" | "user">("user");
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await signup(formData.firstName, formData.lastName, formData.email, formData.password);
+            await signup(formData.firstName, formData.lastName, formData.email, formData.password, role);
             toast.success("Account created successfully");
             router.push("/login");
         } catch (err: any) {
@@ -85,6 +85,20 @@ export default function SignUpPage() {
                         />
                     </div>
 
+                    <div className="relative">
+                        <ShieldCheckIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-900" />
+                        <select
+                            value={role}
+                            onChange={(e) =>
+                            setRole(e.target.value as "admin" | "user")
+                            }
+                            className="w-full border border-gray-300 rounded-xl py-2 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                            required
+                        >
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
                     <div className="relative">
                         <LockClosedIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-900" />
                         <input

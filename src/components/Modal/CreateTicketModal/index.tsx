@@ -13,6 +13,8 @@ interface TicketModalProps {
   setNewDescription: (val: string) => void;
   newStatus: "open" | "in-progress" | "closed";
   setNewStatus: (val: "open" | "in-progress" | "closed") => void;
+  priority: "low" | "medium" | "high";
+  setPriority: (val: "low" | "medium" | "high") => void;
   assignedTo: string;
   setAssignedTo: (val: string) => void;
   users: any[];
@@ -29,6 +31,8 @@ export default function CreateTicketModal({
   setNewDescription,
   newStatus,
   setNewStatus,
+  priority,
+  setPriority,
   assignedTo,
   setAssignedTo,
   users,
@@ -59,6 +63,18 @@ export default function CreateTicketModal({
             className="w-full border rounded-xl px-4 py-2 text-gray-900"
             required
           />
+
+          <select
+            value={priority}
+            onChange={(e) =>
+              setPriority(e.target.value as "low" | "medium" | "high")
+            }
+            className="w-full border rounded-xl px-4 py-2 text-gray-900"
+          >
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
 
           <select
             value={newStatus}

@@ -5,83 +5,42 @@ export interface Ticket {
   title: string;
   description: string;
   status: "open" | "in-progress" | "closed";
+  priority: "low" | "medium" | "high";
   raisedBy: string;
   assignedTo: string;
+  createdAt: string;
 }
 
-const getCurrentUserEmail = () => {
-  if (typeof window === "undefined") return null;
+const API_URL = "https://698eb421aded595c25328379.mockapi.io/tickets";
 
-  const user = JSON.parse(
-    localStorage.getItem("currentUser") || "null"
-  );
-
-  return user?.email || "unknown@gmail.com";
+const formatDate = (isoDate: string) => {
+  const date = new Date(isoDate);
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 };
 
-
-const initialTickets: Ticket[] = [
-  {
-    id: "1",
-    title: "Login Issue",
-    description: "Cannot login to dashboard fwww",
-    status: "open",
-    raisedBy: getCurrentUserEmail(),
-    assignedTo: "ravi@gmail.com",
-  },
-  {
-    id: "2",
-    title: "Payment Issue",
-    description: "Payment not processed",
-    status: "open",
-    raisedBy: getCurrentUserEmail(),
-    assignedTo: "mohan@gmail.com",
-  },
-  {
-    id: "3",
-    title: "Production Issue",
-    description: "Production page is not loading",
-    status: "open",
-    raisedBy: getCurrentUserEmail(),
-    assignedTo: "unknown@gmail.com",
-  },
-  {
-    id: "4",
-    title: "Laptop Issue",
-    description: "Laptop is not working",
-    status: "in-progress",
-    raisedBy: getCurrentUserEmail(),
-    assignedTo: "unkown@gmail.com",
-  },{
-    id: "5",
-    title: "Laptop battery issue",
-    description: "Battery drainage very fastly",
-    status: "in-progress",
-    raisedBy: getCurrentUserEmail(),
-    assignedTo: "unknown@gmail.com",
-  }
-];
-
-const getTicketsFromStorage = (): Ticket[] => {
-  const stored = localStorage.getItem("tickets");
-  
-  // If no tickets in storage or a reset flag is true, use initialTickets
-  if (!stored || localStorage.getItem("resetTickets") === "true") {
-    localStorage.setItem("tickets", JSON.stringify(initialTickets));
-    localStorage.removeItem("resetTickets");
-    return initialTickets;
-  }
-
-  return JSON.parse(stored);
-};
-
-const saveTicketsToStorage = (tickets: Ticket[]) => {
-  localStorage.setItem("tickets", JSON.stringify(tickets));
+const normalizeTickets = (ticketsFromApi: any[]) => {
+  const statusMap: Ticket["status"][] = ["open", "in-progress", "closed"];
+  const priorityMap: ("low" | "medium" | "high")[] = ["low", "medium", "high"];
+  return ticketsFromApi.map((t: any, index: number) => ({
+    ...t,
+    status: statusMap.includes(t.status) ? t.status : "open",
+    priority: priorityMap.includes(t.priority) ? t.priority : "low",
+    createdAt: formatDate(new Date(t.createdAt * 1000).toISOString())
+  }));
 };
 
 export const fetchTickets = createAsyncThunk(
   "tickets/fetchTickets",
-  async () => getTicketsFromStorage()
+  async () => {
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error("Failed to fetch tickets");
+    const data = await res.json();
+    return normalizeTickets(data);
+  }
 );
 
 export const createTicket = createAsyncThunk(
@@ -90,52 +49,38 @@ export const createTicket = createAsyncThunk(
     title: string;
     description: string;
     status: "open" | "in-progress" | "closed";
+    priority: "low" | "medium" | "high";
     assignedTo: string;
+    raisedBy: string;
   }) => {
-    const tickets = getTicketsFromStorage();
-    const currentUser = JSON.parse(
-      localStorage.getItem("currentUser") || "null"
-    );
-
-    if (!currentUser) throw new Error("User not logged in");
-
-    const newTicket: Ticket = {
-      id: Date.now().toString(),
-      title: data.title,
-      description: data.description,
-      status: data.status,
-      raisedBy: currentUser.email,
-      assignedTo: data.assignedTo,
-    };
-
-    tickets.push(newTicket);
-    saveTicketsToStorage(tickets);
-
-    return newTicket;
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to create ticket");
+    return (await res.json()) as Ticket;
   }
 );
 
 export const updateTicket = createAsyncThunk(
   "tickets/updateTicket",
   async ({ id, data }: { id: string; data: Partial<Ticket> }) => {
-    const tickets = getTicketsFromStorage();
-
-    const updatedTickets = tickets.map((t) =>
-      t.id === id ? { ...t, ...data } : t
-    );
-
-    saveTicketsToStorage(updatedTickets);
-
-    return updatedTickets.find((t) => t.id === id);
+    const res = await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to update ticket");
+    return (await res.json()) as Ticket;
   }
 );
 
 export const deleteTicket = createAsyncThunk(
   "tickets/deleteTicket",
   async (id: string) => {
-    const tickets = getTicketsFromStorage();
-    const remaining = tickets.filter((t) => t.id !== id);
-    saveTicketsToStorage(remaining);
+    const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Failed to delete ticket");
     return id;
   }
 );
@@ -150,8 +95,16 @@ const ticketsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(fetchTickets.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(fetchTickets.fulfilled, (state, action) => {
         state.tickets = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchTickets.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch tickets";
       })
       .addCase(createTicket.fulfilled, (state, action) => {
         state.tickets.push(action.payload);
@@ -163,9 +116,7 @@ const ticketsSlice = createSlice({
         );
       })
       .addCase(deleteTicket.fulfilled, (state, action) => {
-        state.tickets = state.tickets.filter(
-          (t) => t.id !== action.payload
-        );
+        state.tickets = state.tickets.filter((t) => t.id !== action.payload);
       });
   },
 });

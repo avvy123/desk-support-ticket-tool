@@ -37,19 +37,6 @@ export default function Navbar() {
       <div className="flex items-center space-x-6">
         {user && (
           <>
-            <button
-              onClick={() => router.push("/dashboard/table")}
-              className="text-gray-700 hover:text-blue-600 font-medium"
-            >
-              Dashboard
-            </button>
-
-            <button
-              className="text-gray-700 hover:text-blue-600 font-medium"
-            >
-              Tickets
-            </button>
-
             <span className="text-gray-700">
               Welcome, {user.firstName}
             </span>

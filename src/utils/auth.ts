@@ -6,21 +6,28 @@ export interface User {
     lastname: string;
     email: string;
     password: string;
+    role: "admin" | "user";
 }
 
 export const signup = async (
   firstName: string,
   lastName: string,
   email: string,
-  password: string
+  password: string,
+  role: "admin" | "user"
 ) => {
   const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
+
   const userExists = existingUsers.find(
     (user: any) => user.email === email
   );
 
   if (userExists) {
     throw new Error("Email already registered");
+  }
+
+  if (role === "admin") {
+    throw new Error("Admin already exists. Only one admin allowed.");
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -30,6 +37,7 @@ export const signup = async (
     lastName,
     email,
     password: hashedPassword,
+    role,
   };
 
   localStorage.setItem(
