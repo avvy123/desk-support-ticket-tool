@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import loginbackGround from "../../src/images/login-background.png"
 import bcrypt from "bcryptjs";
 
 export default function ForgotPasswordPage() {
@@ -57,8 +58,9 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-6 rounded-xl w-[380px] shadow">
+    <div className="min-h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: `url(${loginbackGround.src})` }}>
+      <div className="relative z-10 w-full max-w-md sm:p-8 mx-4 sm:mx-auto">
+        <div className="bg-white p-6 rounded-xl shadow">
         <h2 className="text-xl font-bold mb-4 text-black">Reset Password</h2>
         <form className="space-y-6" onSubmit={handleSubmit}>
           {error && (
@@ -107,6 +109,7 @@ export default function ForgotPasswordPage() {
             Update Password
           </button>
         </form>
+      </div>
       </div>
     </div>
   );

@@ -45,7 +45,7 @@ export default function LoginPage() {
       className="min-h-screen flex items-center justify-center bg-cover bg-center"
       style={{ backgroundImage: `url(${loginbackGround.src})` }}
     >
-      <div className="relative z-10 w-full max-w-md p-8 bg-white rounded-2xl shadow-lg">
+      <div className="relative z-10 w-full max-w-md p-6 sm:p-8 mx-4 sm:mx-auto bg-white rounded-2xl shadow-lg">
         <div className="flex items-center justify-center mb-6 space-x-2">
           <img src={customerSupportIcon.src} alt="Logo" className="w-10 h-10" />
           <span className="text-2xl font-bold text-blue-600">deskSupport</span>
@@ -84,7 +84,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => router.push("/forgot-password")}
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-blue-600 hover:underline cursor-pointer"
             >
               Forgot Password?
             </button>
