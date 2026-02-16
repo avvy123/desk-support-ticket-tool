@@ -8,6 +8,9 @@ import {
   deleteTicket,
   createTicket,
   updateTicket,
+  setSearch,
+  setFilter,
+  setEditingTicket
 } from "../../src/store/ticketsSlice";
 import { getUser } from "../../src/utils/auth";
 import TicketCard from "../../src/components/TicketCard";
@@ -16,23 +19,22 @@ import SearchBar from "../../src/components/SearchBar";
 import CreateTicketModal from "@/src/components/Modal/CreateTicketModal";
 import {dummyTickets} from "../../src/utils/mockticket";
 import { getUserName } from "@/src/utils/getUsername";
+import Loader from "@/src/components/Loader";
+import NoTickets from "@/src/components/NoTickets/NoTickets";
 
 export default function Dashboard() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { tickets, loading } = useSelector((state: any) => state.tickets);
+  const { tickets, loading, search, filter, editingTicket } = useSelector((state: any) => state.tickets);
 
-  const [search, setSearch] = useState("");
   const [userChecked, setUserChecked] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingTicket, setEditingTicket] = useState<any>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newStatus, setNewStatus] = useState<"open" | "in-progress" | "closed">("open");
   const [priority, setPriority] = useState<"low" | "medium" | "high">("low");
   const [assignedTo, setAssignedTo] = useState("");
-  const [filter, setFilter] = useState("all");
 
   const users =
     typeof window !== "undefined"
@@ -131,14 +133,19 @@ export default function Dashboard() {
         </div>
 
         <div className="flex gap-4 mb-6">
-          <SearchBar value={search} onChange={(e: any) => setSearch(e.target.value)} />
-          <Filter value={filter} onChange={(e: any) => setFilter(e.target.value)} />
+          <SearchBar value={search} onChange={(e: any) => dispatch(setSearch(e.target.value))} />
+          <Filter value={filter} onChange={(e: any) => dispatch(setFilter(e.target.value))} />
         </div>
 
         {loading ? (
-          <p className="text-gray-600">Loading tickets...</p>
+          <Loader message="Please wait while loading tickets !!!" />
         ) : filteredTickets.length === 0 ? (
-          <p className="text-gray-600">No tickets found.</p>
+          <NoTickets
+            title="No tickets found"
+            description="Try changing filters or create a new support ticket."
+            actionText="Create Ticket"
+            onAction={() => setIsModalOpen(true)}
+          />
         ) : (
           <div className="h-100 min-h-screen overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-gray-400">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

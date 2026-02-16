@@ -22,11 +22,16 @@ export const signup = async (
     (user: any) => user.email === email
   );
 
+  const adminExists = existingUsers.some(
+    (user: any) => user.role === "admin"
+  );
+
+
   if (userExists) {
     throw new Error("Email already registered");
   }
 
-  if (role === "admin") {
+  if (role === "admin" && adminExists) {
     throw new Error("Admin already exists. Only one admin allowed.");
   }
 
@@ -74,7 +79,11 @@ export const logout = () => {
 };
 
 export function getUser() {
-    const currentUser = localStorage.getItem("currentUser");
-    if (!currentUser) return null;
-    return JSON.parse(currentUser);
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const currentUser = localStorage.getItem("currentUser");
+  if (!currentUser) return null;
+  return JSON.parse(currentUser);
 }
+

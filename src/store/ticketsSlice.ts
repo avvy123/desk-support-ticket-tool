@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { dummyTickets } from "../utils/mockticket";
 
 export interface Ticket {
@@ -12,6 +12,24 @@ export interface Ticket {
   createdAt: string;
 }
 
+interface TicketsState {
+  tickets: Ticket[];
+  loading: boolean;
+  error: string | null;
+  search: string;
+  filter: "all" | "open" | "in-progress" | "closed";
+  editingTicket: Ticket | null;
+}
+
+const initialState: TicketsState = {
+  tickets: [],
+  loading: false,
+  error: null,
+  search: "",
+  filter: "all",
+  editingTicket: null,
+};
+
 const API_URL = "https://698eb421aded595c25328379.mockapi.io/tickets";
 
 const formatDate = (isoDate: string) => {
@@ -23,37 +41,34 @@ const formatDate = (isoDate: string) => {
   });
 };
 
-const normalizeTickets = (ticketsFromApi: any[]) => {
-  const statusMap: Ticket["status"][] = ["open", "in-progress", "closed"];
-  const priorityMap: ("low" | "medium" | "high")[] = ["low", "medium", "high"];
-  return ticketsFromApi.map((t: any, index: number) => ({
-    ...t,
-    status: statusMap.includes(t.status) ? t.status : "open",
-    priority: priorityMap.includes(t.priority) ? t.priority : "low",
-    createdAt: formatDate(new Date(t.createdAt * 1000).toISOString())
-  }));
-};
-
 export const fetchTickets = createAsyncThunk(
   "tickets/fetchTickets",
   async () => {
     const res = await fetch(API_URL);
     if (!res.ok) throw new Error("Failed to fetch tickets");
+
     const data = await res.json();
-    return normalizeTickets(data);
+
+    return data.map((t: any, index: number) => ({
+      ...t,
+      title: dummyTickets[index]?.title || t.title,
+      description: dummyTickets[index]?.description || t.description,
+      status: ["open", "in-progress", "closed"].includes(t.status)
+        ? t.status
+        : "open",
+      priority: ["low", "medium", "high"].includes(t.priority)
+        ? t.priority
+        : "low",
+      createdAt: formatDate(
+        new Date(t.createdAt * 1000).toISOString()
+      ),
+    }));
   }
 );
 
 export const createTicket = createAsyncThunk(
   "tickets/createTicket",
-  async (data: {
-    title: string;
-    description: string;
-    status: "open" | "in-progress" | "closed";
-    priority: "low" | "medium" | "high";
-    assignedTo: string;
-    raisedBy: string;
-  }) => {
+  async (data: Omit<Ticket, "id" | "createdAt">) => {
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -80,7 +95,9 @@ export const updateTicket = createAsyncThunk(
 export const deleteTicket = createAsyncThunk(
   "tickets/deleteTicket",
   async (id: string) => {
-    const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    const res = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+    });
     if (!res.ok) throw new Error("Failed to delete ticket");
     return id;
   }
@@ -88,44 +105,59 @@ export const deleteTicket = createAsyncThunk(
 
 const ticketsSlice = createSlice({
   name: "tickets",
-  initialState: {
-    tickets: [] as Ticket[],
-    loading: false,
-    error: null as string | null,
+  initialState,
+  reducers: {
+    setSearch(state, action: PayloadAction<string>) {
+      state.search = action.payload;
+    },
+    setFilter(
+      state,
+      action: PayloadAction<TicketsState["filter"]>
+    ) {
+      state.filter = action.payload;
+    },
+    setEditingTicket(
+      state,
+      action: PayloadAction<Ticket | null>
+    ) {
+      state.editingTicket = action.payload;
+    },
   },
-  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchTickets.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchTickets.fulfilled, (state, action) => {
-      state.loading = false;
-
-      state.tickets = action.payload.map((ticket: any, index: number) => ({
-        ...ticket,
-        title: dummyTickets[index]?.title || ticket.title,
-        description:
-          dummyTickets[index]?.description || ticket.description,
-      }))
-    })
+        state.loading = false;
+        state.tickets = action.payload;
+      })
       .addCase(fetchTickets.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to fetch tickets";
+        state.error =
+          action.error.message || "Failed to fetch tickets";
       })
       .addCase(createTicket.fulfilled, (state, action) => {
         state.tickets.push(action.payload);
       })
       .addCase(updateTicket.fulfilled, (state, action) => {
-        if (!action.payload) return;
         state.tickets = state.tickets.map((t) =>
-          t.id === action.payload!.id ? action.payload! : t
+          t.id === action.payload.id ? action.payload : t
         );
       })
       .addCase(deleteTicket.fulfilled, (state, action) => {
-        state.tickets = state.tickets.filter((t) => t.id !== action.payload);
+        state.tickets = state.tickets.filter(
+          (t) => t.id !== action.payload
+        );
       });
   },
 });
+
+export const {
+  setSearch,
+  setFilter,
+  setEditingTicket,
+} = ticketsSlice.actions;
 
 export default ticketsSlice.reducer;

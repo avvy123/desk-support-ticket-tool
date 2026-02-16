@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
+import { PowerIcon } from "@heroicons/react/24/outline";
 import { getUser, logout } from "@/src/utils/auth";
 import customerSupportLogo from "../../../src/images/customer_support_icon.svg";
 
 export default function Navbar() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const currentUser = getUser();
     setUser(currentUser);
   }, []);
@@ -20,6 +22,8 @@ export default function Navbar() {
     router.push("/login");
     router.refresh();
   };
+
+  if (!mounted) return null;
 
   return (
     <nav className="bg-white shadow p-4 flex justify-between items-center">
@@ -41,10 +45,9 @@ export default function Navbar() {
               Welcome, {user.firstName}
             </span>
 
-            <ArrowRightOnRectangleIcon
+            <PowerIcon
               className="h-6 w-6 text-gray-600 cursor-pointer"
               onClick={handleLogout}
-              title="Logout"
             />
           </>
         )}
