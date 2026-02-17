@@ -26,14 +26,13 @@ export default function Dashboard() {
   const dispatch = useDispatch();
   const router = useRouter();
   const { tickets, loading, search, filter, editingTicket } = useSelector((state: any) => state.tickets);
-
   const [userChecked, setUserChecked] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  const [newStatus, setNewStatus] = useState<"open" | "in-progress" | "closed">("open");
-  const [priority, setPriority] = useState<"low" | "medium" | "high">("low");
+  const [newStatus, setNewStatus] = useState<"" | "open" | "in-progress" | "closed">("");
+  const [priority, setPriority] = useState<"" | "low" | "medium" | "high">("");
   const [assignedTo, setAssignedTo] = useState("");
 
   const users =
@@ -78,7 +77,7 @@ export default function Dashboard() {
   });
 
 
-  const handleCreateTicket = async (e: React.FormEvent) => {
+  const handleCreateTicket = async (e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
     e.preventDefault();
     if (!newTitle || !newDescription || !assignedTo) return;
 
@@ -109,7 +108,7 @@ export default function Dashboard() {
     }
 
     setIsModalOpen(false);
-    setEditingTicket(null);
+    dispatch(setEditingTicket(null));
     setNewTitle("");
     setNewDescription("");
     setNewStatus("open");
@@ -158,7 +157,7 @@ export default function Dashboard() {
                 currentUserEmail={user?.email}
                 onDelete={() => dispatch(deleteTicket(ticket.id) as any)}
                 onEdit={() => {
-                  setEditingTicket(ticket);
+                  dispatch(setEditingTicket(ticket));
                   setNewTitle(ticket.title);
                   setNewDescription(ticket.description);
                   setNewStatus(ticket.status);
@@ -177,7 +176,12 @@ export default function Dashboard() {
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
-          setEditingTicket(null);
+          dispatch(setEditingTicket(null));
+          setNewTitle("");
+          setNewDescription("");
+          setNewStatus("open");
+          setPriority("low");
+          setAssignedTo("");
         }}
         onSubmit={handleCreateTicket}
         editingTicket={editingTicket}

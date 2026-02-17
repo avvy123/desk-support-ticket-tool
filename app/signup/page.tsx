@@ -25,7 +25,7 @@ export default function SignUpPage() {
     });
     const [error, setError] = useState("");
     const [role, setRole] = useState<"admin" | "user">("user");
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
         e.preventDefault();
         try {
             await signup(formData.firstName, formData.lastName, formData.email, formData.password, role);

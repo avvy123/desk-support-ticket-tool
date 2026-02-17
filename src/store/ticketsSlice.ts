@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { dummyTickets } from "../utils/mockticket";
+import { formatDate } from "../utils/formatDate";
 
 export interface Ticket {
   id: string;
   title: string;
   description: string;
-  status: "open" | "in-progress" | "closed";
-  priority: "low" | "medium" | "high";
+  status: "" | "open" | "in-progress" | "closed";
+  priority: "" | "low" | "medium" | "high";
   raisedBy: string;
   assignedTo: string;
   createdAt: string;
@@ -32,15 +33,6 @@ const initialState: TicketsState = {
 
 const API_URL = "https://698eb421aded595c25328379.mockapi.io/tickets";
 
-const formatDate = (isoDate: string) => {
-  const date = new Date(isoDate);
-  return date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-};
-
 export const fetchTickets = createAsyncThunk(
   "tickets/fetchTickets",
   async () => {
@@ -59,9 +51,7 @@ export const fetchTickets = createAsyncThunk(
       priority: ["low", "medium", "high"].includes(t.priority)
         ? t.priority
         : "low",
-      createdAt: formatDate(
-        new Date(t.createdAt * 1000).toISOString()
-      ),
+      createdAt: formatDate(new Date(t.createdAt * 1000).toISOString())
     }));
   }
 );
@@ -142,9 +132,20 @@ const ticketsSlice = createSlice({
         state.tickets.push(action.payload);
       })
       .addCase(updateTicket.fulfilled, (state, action) => {
-        state.tickets = state.tickets.map((t) =>
-          t.id === action.payload.id ? action.payload : t
+        const index = state.tickets.findIndex(
+          (t) => t.id === action.payload.id
         );
+        if (index === -1) return;
+
+        const updatedTicket = action.payload;
+
+        state.tickets[index] = {
+          ...state.tickets[index],
+          ...updatedTicket,
+          createdAt: typeof updatedTicket.createdAt === "number"
+            ? formatDate(new Date(updatedTicket.createdAt * 1000).toISOString())
+            : updatedTicket.createdAt,
+        };
       })
       .addCase(deleteTicket.fulfilled, (state, action) => {
         state.tickets = state.tickets.filter(

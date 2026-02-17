@@ -5,16 +5,16 @@ import React from "react";
 interface TicketModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => void;
   editingTicket: any;
   newTitle: string;
   setNewTitle: (val: string) => void;
   newDescription: string;
   setNewDescription: (val: string) => void;
-  newStatus: "open" | "in-progress" | "closed";
+  newStatus: "" | "open" | "in-progress" | "closed";
   setNewStatus: (val: "open" | "in-progress" | "closed") => void;
-  priority: "low" | "medium" | "high";
-  setPriority: (val: "low" | "medium" | "high") => void;
+  priority: "" | "low" | "medium" | "high";
+  setPriority: (val: "" | "low" | "medium" | "high") => void;
   assignedTo: string;
   setAssignedTo: (val: string) => void;
   users: any[];
@@ -42,70 +42,112 @@ export default function CreateTicketModal({
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
       <div className="bg-white p-6 rounded-2xl w-full max-w-md shadow-xl">
-        <h3 className="text-xl font-semibold mb-4 text-gray-900">
+        <h3 className="text-xl font-semibold mb-6 text-gray-900">
           {editingTicket ? "Update Ticket" : "Create Ticket"}
         </h3>
 
-        <form onSubmit={onSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            className="w-full border rounded-xl px-4 py-2 text-gray-900"
-            required
-          />
+        <form onSubmit={onSubmit} className="space-y-5">
+          <div className="relative">
+            <input
+              type="text"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              placeholder=" "
+              required
+              className="peer w-full border rounded-xl px-4 py-3 text-gray-900 focus:outline-none"
+            />
+            <label
+              className="absolute left-4 bg-white px-1 text-gray-500 transition-all
+                top-3.5
+                peer-placeholder-shown:top-3.5
+                peer-placeholder-shown:text-base
+                peer-focus:-top-2
+                peer-focus:text-sm
+                peer-focus:text-gray-500
+                peer-not-placeholder-shown:-top-2
+                peer-not-placeholder-shown:text-sm"
+            >
+              Title
+            </label>
+          </div>
 
-          <textarea
-            placeholder="Description"
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)}
-            className="w-full border rounded-xl px-4 py-2 text-gray-900"
-            required
-          />
+          <div className="relative">
+            <textarea
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              placeholder=" "
+              required
+              className="peer w-full border rounded-xl px-4 py-3 text-gray-900 focus:outline-none"
+            />
+            <label
+              className="absolute left-4 bg-white px-1 text-gray-500 transition-all
+                top-3.5
+                peer-placeholder-shown:top-3.5
+                peer-placeholder-shown:text-base
+                peer-focus:-top-2
+                peer-focus:text-sm
+                peer-not-placeholder-shown:-top-2
+                peer-not-placeholder-shown:text-sm"
+            >
+              Description
+            </label>
+          </div>
 
-          <select
-            value={priority}
-            onChange={(e) =>
-              setPriority(e.target.value as "low" | "medium" | "high")
-            }
-            className="w-full border rounded-xl px-4 py-2 text-gray-900"
-          >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
+          <div className="relative">
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value as any)}
+              className="peer w-full border rounded-xl px-4 py-3 text-gray-900 focus:outline-none"
+            >
+              <option value="" disabled hidden>Select Priority</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+            <label className="absolute left-4 -top-2 text-sm bg-white px-1 text-gray-500">
+              Priority
+            </label>
+          </div>
 
-          <select
-            value={newStatus}
-            onChange={(e) =>
-              setNewStatus(e.target.value as "open" | "in-progress" | "closed")
-            }
-            className="w-full border rounded-xl px-4 py-2 text-gray-900"
-          >
-            <option value="open">Open</option>
-            <option value="in-progress">In Progress</option>
-            <option value="closed">Closed</option>
-          </select>
+          <div className="relative">
+            <select
+              value={newStatus}
+              onChange={(e) => setNewStatus(e.target.value as any)}
+              className="peer w-full border rounded-xl px-4 py-3 text-gray-900 focus:outline-none"
+            >
+              <option value="" disabled hidden>Select Status</option>
+              <option value="open">Open</option>
+              <option value="in-progress">In Progress</option>
+              <option value="closed">Closed</option>
+            </select>
+            <label className="absolute left-4 -top-2 text-sm bg-white px-1 text-gray-500">
+              Status
+            </label>
+          </div>
 
-          <select
-            value={assignedTo}
-            onChange={(e) => setAssignedTo(e.target.value)}
-            className="w-full border rounded-xl px-4 py-2 text-gray-900"
-            required
-          >
-            <option value="">Assign To</option>
-            {users.map((u: any) => (
-              <option key={u.email} value={u.email}>
-                {u.firstName}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={assignedTo}
+              onChange={(e) => setAssignedTo(e.target.value)}
+              required
+              className="peer w-full border rounded-xl px-4 py-3 text-gray-900 focus:outline-none"
+            >
+              <option value="" disabled hidden>Select Assignee</option>
+              {users.map((u: any) => (
+                <option key={u.email} value={u.email}>
+                  {u.firstName}
+                </option>
+              ))}
+            </select>
+            <label className="absolute left-4 -top-2 text-sm bg-white px-1 text-gray-500">
+              Assign To
+            </label>
+          </div>
 
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
-              onClick={() => onClose()}
+              onClick={onClose}
               className="px-4 py-2 border rounded-xl text-gray-700"
             >
               Cancel

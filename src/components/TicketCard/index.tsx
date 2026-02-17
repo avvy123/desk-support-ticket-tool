@@ -36,8 +36,8 @@ export default function TicketCard({
     ticket.assignedTo === currentUserEmail || currentUser.role === "admin";
 
   return (
-    <div className="flex flex-col gap-1 bg-white rounded-2xl shadow hover:shadow-lg transition border-1 border-gray-400" onClick={handleTicketClick}>
-      <div className="flex justify-between items-center px-3 py-4">
+    <div className="flex flex-col gap-1 bg-white rounded-2xl shadow hover:shadow-lg transition border-1 border-gray-400">
+      <div className="flex justify-between items-center px-3 py-4" onClick={handleTicketClick}>
         <p
         className={`px-3 py-1 rounded-full font-medium text-sm ${
         getPriorityBadge(ticket.priority)
@@ -54,13 +54,13 @@ export default function TicketCard({
           {formatStatus(ticket.status)}
         </span>
       </div>
-        <h3 className="font-semibold pl-3 py-4 pt-0 text-lg text-gray-900 border-b-1 border-black">
-          {ticket.title}
-        </h3>
+      <h3 className="font-semibold pl-3 py-4 pt-0 text-lg text-gray-900 border-b-1 border-black">
+        {ticket.title}
+      </h3>
 
-        <p className="text-gray-700 pl-3 py-4 pt-0">
-          {ticket.description}
-        </p>
+      <p className="text-gray-700 pl-3 py-4 pt-0">
+        {ticket.description}
+      </p>
       <div className="flex items-center justify-between px-3 py-4 text-sm text-gray-600 border-t-1">
        <div>
          <p>

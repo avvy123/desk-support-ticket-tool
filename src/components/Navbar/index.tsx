@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import { Bars3Icon, PowerIcon } from "@heroicons/react/24/outline";
 import { getUser, logout } from "@/src/utils/auth";
 import customerSupportLogo from "../../../src/images/customer_support_icon.svg";
 import Sidebar from "../Sidebar";
@@ -46,6 +46,7 @@ export default function Navbar() {
             <span className="text-gray-700">
               Welcome, {user.firstName}
             </span>
+            <PowerIcon className="w-5 h-5 text-black cursor-pointer" onClick={handleLogout} />
           </div>
         )}
 
