@@ -1,5 +1,4 @@
-import { formatDate } from "@/src/utils/formatDate";
-import { getUserName } from "@/src/utils/getUsername";
+import { formatDate, getUserName } from "@/src/utils/commonHelper";
 
 type ActivityType = "created" | "assigned" | "status" | "comment" | "closed";
 
@@ -43,7 +42,7 @@ export default function TicketActivity({ ticket }: { ticket: Ticket }) {
     {
       type: "status",
       user: ticket.assignedTo || ticket.raisedBy,
-      message: `Status changed to ${ticket.status.toUpperCase()}`,
+      message: `Status changed to ${ticket.status}`,
       time: ticket.createdAt,
     },
   ];

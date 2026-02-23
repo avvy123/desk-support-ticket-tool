@@ -1,6 +1,4 @@
-import { getStatusBadge } from "@/src/utils/statusColor";
-import { getPriorityBadge } from "@/src/utils/priorityBadge";
-import { formatStatus } from "@/src/utils/formatStatusText";
+import { formatStatus, getPriorityBadge, getStatusBadge } from "@/src/utils/commonHelper";
 
 export default function TicketHeader({ ticket }: any) {
   return (

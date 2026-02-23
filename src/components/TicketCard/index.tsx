@@ -1,11 +1,9 @@
 "use client";
 
 import { getUser } from "@/src/utils/auth";
+import { formatStatus, getPriorityBadge, getStatusBadge } from "@/src/utils/commonHelper";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import { getStatusBadge } from "@/src/utils/statusColor";
-import { getPriorityBadge } from "@/src/utils/priorityBadge";
-import { formatStatus } from "@/src/utils/formatStatusText";
 
 interface Props {
   ticket: any;

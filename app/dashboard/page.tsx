@@ -18,9 +18,9 @@ import Filter from "../../src/components/Filter";
 import SearchBar from "../../src/components/SearchBar";
 import CreateTicketModal from "@/src/components/Modal/CreateTicketModal";
 import {dummyTickets} from "../../src/utils/mockticket";
-import { getUserName } from "@/src/utils/getUsername";
 import Loader from "@/src/components/Loader";
 import NoTickets from "@/src/components/NoTickets/NoTickets";
+import { getUserName } from "@/src/utils/commonHelper";
 
 export default function Dashboard() {
   const dispatch = useDispatch();
@@ -40,9 +40,8 @@ export default function Dashboard() {
       ? JSON.parse(localStorage.getItem("users") || "[]")
       : [];
 
+  const currentUser = getUser();
   useEffect(() => {
-    const currentUser = getUser();
-
     if (!currentUser) {
       router.push("/login");
     } else {
@@ -111,8 +110,8 @@ export default function Dashboard() {
     dispatch(setEditingTicket(null));
     setNewTitle("");
     setNewDescription("");
-    setNewStatus("open");
-    setPriority("low");
+    setNewStatus("");
+    setPriority("");
     setAssignedTo("");
   };
 
@@ -179,8 +178,8 @@ export default function Dashboard() {
           dispatch(setEditingTicket(null));
           setNewTitle("");
           setNewDescription("");
-          setNewStatus("open");
-          setPriority("low");
+          setNewStatus("");
+          setPriority("");
           setAssignedTo("");
         }}
         onSubmit={handleCreateTicket}

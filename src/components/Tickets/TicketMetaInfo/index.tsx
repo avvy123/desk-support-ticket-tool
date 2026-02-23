@@ -1,4 +1,4 @@
-import { getUserName } from "@/src/utils/getUsername";
+import { getUserName } from "@/src/utils/commonHelper";
 
 export default function TicketMetaInfo({ ticket }: any) {
   return (

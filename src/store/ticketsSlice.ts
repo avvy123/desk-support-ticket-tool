@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { dummyTickets } from "../utils/mockticket";
-import { formatDate } from "../utils/formatDate";
+import { formatDate } from "../utils/commonHelper";
 
 export interface Ticket {
   id: string;

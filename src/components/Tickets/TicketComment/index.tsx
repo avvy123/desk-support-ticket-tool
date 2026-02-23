@@ -1,4 +1,5 @@
 import { getUser } from "@/src/utils/auth";
+import { formatDate } from "@/src/utils/commonHelper";
 import { useState, useEffect } from "react";
 
 type Comment = {
@@ -33,15 +34,6 @@ export default function TicketComments({ ticket }: { ticket: Ticket }) {
       );
     }
   }, [ticket.id]);
-
-  const formatDate = (isoDate: string) => {
-    const date = new Date(isoDate);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  };
 
   const handleAddComment = () => {
     const currentUser = getUser();

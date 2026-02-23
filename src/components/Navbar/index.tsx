@@ -12,10 +12,11 @@ export default function Navbar() {
   const [user, setUser] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const currentUser = getUser();
 
   useEffect(() => {
     setMounted(true);
-    setUser(getUser());
+    setUser(currentUser);
   }, []);
 
   const handleLogout = () => {
