@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { login } from "../../src/utils/auth";
@@ -7,6 +6,8 @@ import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import loginbackGround from "../../src/images/login-background.png";
 import customerSupportIcon from "../../src/images/customer_support_icon.svg";
 import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/src/store/authSlice";
 
 export interface LoginFormData {
   email: string;
@@ -20,7 +21,7 @@ export default function LoginPage() {
     password: "",
   });
   const [error, setError] = useState("");
-
+  const dispatch = useDispatch();
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
     e.preventDefault();
     setError("");
@@ -31,10 +32,10 @@ export default function LoginPage() {
     }
 
     try {
-      await login(loginFormData.email, loginFormData.password);
+      const user = await login(loginFormData.email, loginFormData.password);
+      dispatch(setUser(user));
       toast.success("Login successfully");
       router.push("/dashboard");
-      router.refresh();
     } catch (err: any) {
       setError("Password or email is incorrect");
     }

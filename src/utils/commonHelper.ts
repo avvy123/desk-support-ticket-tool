@@ -1,5 +1,9 @@
-export const formatDate = (isoDate: string) => {
-  const date = new Date(isoDate);
+export const formatDate = (dateInput: string | number) => {
+  const date =
+    typeof dateInput === "number"
+      ? new Date(dateInput * 1000)
+      : new Date(dateInput);
+
   return date.toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",

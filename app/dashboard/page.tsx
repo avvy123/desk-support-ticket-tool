@@ -10,29 +10,39 @@ import {
   updateTicket,
   setSearch,
   setFilter,
-  setEditingTicket
+  setEditingTicket,
 } from "../../src/store/ticketsSlice";
 import { getUser } from "../../src/utils/auth";
-import TicketCard from "../../src/components/TicketCard";
 import Filter from "../../src/components/Filter";
 import SearchBar from "../../src/components/SearchBar";
-import CreateTicketModal from "@/src/components/Modal/CreateTicketModal";
-import {dummyTickets} from "../../src/utils/mockticket";
-import Loader from "@/src/components/Loader";
 import NoTickets from "@/src/components/NoTickets/NoTickets";
 import { getUserName } from "@/src/utils/commonHelper";
+import { dummyTickets } from "@/src/utils/mockticket";
+import TicketCard from "@/src/components/TicketCard";
+import TicketCardSkeletonList from "@/src/components/Skeleton/TicketCardSkeletonList";
+import CreateTicketModal from "@/src/components/Modal/CreateTicketModal";
+import { useSkeletonCount } from "@/src/hooks/useSkeletonCount";
 
 export default function Dashboard() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { tickets, loading, search, filter, editingTicket } = useSelector((state: any) => state.tickets);
+
+  const { tickets, loading, search, filter, editingTicket } = useSelector(
+    (state: any) => state.tickets
+  );
+
   const [userChecked, setUserChecked] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  const [newStatus, setNewStatus] = useState<"" | "open" | "in-progress" | "closed">("");
-  const [priority, setPriority] = useState<"" | "low" | "medium" | "high">("");
+  const [newStatus, setNewStatus] = useState<
+    "" | "open" | "in-progress" | "closed"
+  >("");
+  const [priority, setPriority] = useState<
+    "" | "low" | "medium" | "high"
+  >("");
   const [assignedTo, setAssignedTo] = useState("");
 
   const users =
@@ -41,12 +51,17 @@ export default function Dashboard() {
       : [];
 
   const currentUser = getUser();
+  const skeletonCount = useSkeletonCount();
   useEffect(() => {
     if (!currentUser) {
       router.push("/login");
-    } else {
-      setUser(currentUser);
-      setUserChecked(true);
+      return;
+    }
+
+    setUser(currentUser);
+    setUserChecked(true);
+
+    if (tickets.length === 0) {
       dispatch(fetchTickets() as any);
     }
   }, [dispatch, router]);
@@ -90,6 +105,7 @@ export default function Dashboard() {
             status: newStatus,
             priority: priority,
             assignedTo,
+            currentUser: currentUser?.firstName,
           },
         }) as any
       );
@@ -116,7 +132,6 @@ export default function Dashboard() {
   };
 
   if (!userChecked) return null;
-
   return (
     <div className="min-h-screen bg-gray-200">
       <div className="p-6">
@@ -136,7 +151,7 @@ export default function Dashboard() {
         </div>
 
         {loading ? (
-          <Loader message="Please wait while loading tickets !!!" />
+          <TicketCardSkeletonList count={skeletonCount} />
         ) : filteredTickets.length === 0 ? (
           <NoTickets
             title="No tickets found"

@@ -1,7 +1,7 @@
 "use client";
 
 import { getUser } from "@/src/utils/auth";
-import { formatStatus, getPriorityBadge, getStatusBadge } from "@/src/utils/commonHelper";
+import { formatDate, formatStatus, getPriorityBadge, getStatusBadge } from "@/src/utils/commonHelper";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
@@ -71,7 +71,7 @@ export default function TicketCard({
         </p>
         <p>
         <span className="font-medium">Created:</span>{" "}
-        <span className="font-bold text-black">{ticket.createdAt}</span>
+        <span className="font-bold text-black">{formatDate(ticket.createdAt)}</span>
       </p>
        </div>
       {canModify && (

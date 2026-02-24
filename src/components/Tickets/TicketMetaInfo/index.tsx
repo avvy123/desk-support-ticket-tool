@@ -1,4 +1,4 @@
-import { getUserName } from "@/src/utils/commonHelper";
+import { formatDate, getUserName } from "@/src/utils/commonHelper";
 
 export default function TicketMetaInfo({ ticket }: any) {
   return (
@@ -15,7 +15,7 @@ export default function TicketMetaInfo({ ticket }: any) {
 
       <div>
         <p className="text-gray-500 text-sm">Created At</p>
-        <p className="font-bold text-black">{ticket.createdAt}</p>
+        <p className="font-bold text-black">{formatDate(ticket.createdAt)}</p>
       </div>
 
       <div>

@@ -1,32 +1,27 @@
 "use client";
-
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
 import { Bars3Icon, PowerIcon } from "@heroicons/react/24/outline";
-import { getUser, logout } from "@/src/utils/auth";
 import customerSupportLogo from "../../../src/images/customer_support_icon.svg";
 import Sidebar from "../Sidebar";
+import { logout } from "@/src/utils/auth";
+import { useState } from "react";
+import { clearUser } from "@/src/store/authSlice";
 
 export default function Navbar() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
-  const [mounted, setMounted] = useState(false);
+  const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.auth.user);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const currentUser = getUser();
-
-  useEffect(() => {
-    setMounted(true);
-    setUser(currentUser);
-  }, []);
 
   const handleLogout = () => {
-    logout();
-    setUser(null);
+    logout();       
+    dispatch(clearUser());
     router.push("/login");
     setIsSidebarOpen(false);
   };
 
-  if (!mounted || !user) return null;
+  if (!user) return null;
 
   return (
     <>
@@ -42,23 +37,22 @@ export default function Navbar() {
           </span>
         </div>
 
-        {user && (
-          <div className="hidden md:flex items-center space-x-6">
-            <span className="text-gray-700">
-              Welcome, {user.firstName}
-            </span>
-            <PowerIcon className="w-5 h-5 text-black cursor-pointer" onClick={handleLogout} />
-          </div>
-        )}
+        <div className="hidden md:flex items-center space-x-6">
+          <span className="text-gray-700">
+            Welcome, {user.firstName}
+          </span>
+          <PowerIcon
+            className="w-5 h-5 text-black cursor-pointer"
+            onClick={handleLogout}
+          />
+        </div>
 
-        {user && (
-          <button
-            className="md:hidden"
-            onClick={() => setIsSidebarOpen(true)}
-          >
-            <Bars3Icon className="h-7 w-7 text-gray-700" />
-          </button>
-        )}
+        <button
+          className="md:hidden"
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <Bars3Icon className="h-7 w-7 text-gray-700" />
+        </button>
       </nav>
 
       <Sidebar

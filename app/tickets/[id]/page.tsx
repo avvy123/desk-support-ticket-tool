@@ -4,13 +4,34 @@ import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-
-import TicketHeader from "../../../src/components/Tickets/TicketHeader";
-import TicketMetaInfo from "../../../src/components/Tickets/TicketMetaInfo";
-import TicketDescription from "../../../src/components/Tickets/TicketDescription";
-import TicketActivity from "../../../src/components/Tickets/TicketActivity";
-import TicketComment from "../../../src/components/Tickets/TicketComment";
 import { fetchTickets } from "@/src/store/ticketsSlice";
+import Loader from "@/src/components/Loader";
+import dynamic from "next/dynamic";
+
+const TicketHeader = dynamic(
+  () => import("../../../src/components/Tickets/TicketHeader"),
+  { loading: () => <Loader message="Loading header..." />, ssr: false }
+);
+
+const TicketMetaInfo = dynamic(
+  () => import("../../../src/components/Tickets/TicketMetaInfo"),
+  { loading: () => <Loader message="Loading info..." />, ssr: false }
+);
+
+const TicketDescription = dynamic(
+  () => import("../../../src/components/Tickets/TicketDescription"),
+  { loading: () => <Loader message="Loading description..." />, ssr: false }
+);
+
+const TicketActivity = dynamic(
+  () => import("../../../src/components/Tickets/TicketActivity"),
+  { loading: () => <Loader message="Loading history..." />, ssr: false }
+);
+
+const TicketComment = dynamic(
+  () => import("../../../src/components/Tickets/TicketComment"),
+  { loading: () => <Loader message="Loading comments..." />, ssr: false }
+);
 
 export default function TicketDetailsPage() {
   const { id } = useParams();
@@ -29,7 +50,7 @@ export default function TicketDetailsPage() {
   }, [tickets.length, dispatch]);
 
   if (!ticket) {
-    return <div className="p-6">Ticket not found</div>;
+    return <Loader message="Please wait while loading tickets !!!" />
   }
 
   return (
