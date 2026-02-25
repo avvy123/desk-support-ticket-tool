@@ -7,6 +7,7 @@ import { getUser } from "@/src/utils/auth";
 import { setUser, clearUser } from "@/src/store/authSlice";
 import Navbar from "../Navbar";
 import Loader from "@/src/components/Loader";
+import { hydrateTickets } from "@/src/store/ticketsSlice";
 
 function AuthHydrator({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch();
@@ -19,6 +20,12 @@ function AuthHydrator({ children }: { children: React.ReactNode }) {
     } else {
       dispatch(clearUser());
     }
+    if (typeof window !== "undefined") {
+    const rawTickets = localStorage.getItem("tickets_state");
+    if (rawTickets) {
+      dispatch(hydrateTickets(JSON.parse(rawTickets)));
+    }
+  }
   }, [dispatch]);
 
   if (!authChecked) {

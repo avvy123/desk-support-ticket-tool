@@ -8,11 +8,11 @@ export type ActivityType =
   | "status"
   | "priority"
   | "title"
-  | "description" ;
+  | "description";
 
 export interface Activity {
   type: ActivityType;
-  user: string; // email or user id
+  user: string;
   message: string;
   time: string;
 }
@@ -21,7 +21,7 @@ export interface Ticket {
   id: string;
   title: string;
   description: string;
-  status: ""| "open" | "in-progress" | "closed";
+  status: "" | "open" | "in-progress" | "closed";
   priority: "" | "low" | "medium" | "high";
   raisedBy: string;
   assignedTo: string;
@@ -41,21 +41,14 @@ interface TicketsState {
 
 const STORAGE_KEY = "tickets_state";
 
-const loadTicketsFromStorage = (): Ticket[] => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
+const saveTicketsToStorage = (tickets: Ticket[]) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets));
   }
 };
 
-const saveTicketsToStorage = (tickets: Ticket[]) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets));
-};
-
 const initialState: TicketsState = {
-  tickets: loadTicketsFromStorage(),
+  tickets: [],
   loading: false,
   error: null,
   search: "",
@@ -143,13 +136,7 @@ export const createTicket = createAsyncThunk(
 
 export const updateTicket = createAsyncThunk(
   "tickets/updateTicket",
-  async ({
-    id,
-    data,
-  }: {
-    id: string;
-    data: Partial<Ticket>;
-  }) => {
+  async ({ id, data }: { id: string; data: Partial<Ticket> }) => {
     const res = await fetch(`${API_URL}/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -158,11 +145,7 @@ export const updateTicket = createAsyncThunk(
 
     if (!res.ok) throw new Error("Failed to update ticket");
 
-    const updatedTicket = await res.json();
-
-    return {
-      ...updatedTicket,
-    };
+    return await res.json();
   }
 );
 
@@ -187,14 +170,21 @@ const ticketsSlice = createSlice({
     setEditingTicket(state, action: PayloadAction<Ticket | null>) {
       state.editingTicket = action.payload;
     },
+
+    hydrateTickets(state, action: PayloadAction<Ticket[]>) {
+      state.tickets = action.payload;
+    },
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchTickets.pending, (state) => {
         state.loading = true;
       })
+
       .addCase(fetchTickets.fulfilled, (state, action) => {
         state.loading = false;
+
         if (state.tickets.length > 0) return;
 
         state.tickets = action.payload.map((ticket) => ({
@@ -204,10 +194,12 @@ const ticketsSlice = createSlice({
 
         saveTicketsToStorage(state.tickets);
       })
+
       .addCase(fetchTickets.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to load tickets";
       })
+
       .addCase(createTicket.fulfilled, (state, action) => {
         const ticket = action.payload;
 
@@ -227,7 +219,7 @@ const ticketsSlice = createSlice({
 
         const oldTicket = state.tickets[index];
         const updatedTicket = action.payload;
-        const actor = action.payload.currentUser;
+        const actor = updatedTicket.currentUser;
         const now = new Date().toISOString();
 
         if (updatedTicket.status && updatedTicket.status !== oldTicket.status) {
@@ -269,7 +261,7 @@ const ticketsSlice = createSlice({
           oldTicket.activities?.push({
             type: "title",
             user: actor,
-            message: `${getUserName(actor)} update the title`,
+            message: `${getUserName(actor)} updated the title`,
             time: now,
           });
         }
@@ -303,7 +295,11 @@ const ticketsSlice = createSlice({
   },
 });
 
-export const { setSearch, setFilter, setEditingTicket } =
-  ticketsSlice.actions;
+export const {
+  setSearch,
+  setFilter,
+  setEditingTicket,
+  hydrateTickets,
+} = ticketsSlice.actions;
 
 export default ticketsSlice.reducer;
