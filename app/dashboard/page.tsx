@@ -12,7 +12,7 @@ import {
   setFilter,
   setEditingTicket,
 } from "../../src/store/ticketsSlice";
-import { getUser } from "../../src/utils/auth";
+import { getUser, logout } from "../../src/utils/auth";
 import Filter from "../../src/components/Filter";
 import SearchBar from "../../src/components/SearchBar";
 import NoTickets from "@/src/components/NoTickets/NoTickets";
@@ -22,10 +22,25 @@ import TicketCard from "@/src/components/TicketCard";
 import TicketCardSkeletonList from "@/src/components/Skeleton/TicketCardSkeletonList";
 import CreateTicketModal from "@/src/components/Modal/CreateTicketModal";
 import { useSkeletonCount } from "@/src/hooks/useSkeletonCount";
+import { clearUser } from "@/src/store/authSlice";
 
 export default function Dashboard() {
   const dispatch = useDispatch();
   const router = useRouter();
+  useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+    const onBack = () => {
+      logout();
+      dispatch(clearUser());
+      router.replace("/login");
+    };
+
+    window.addEventListener("popstate", onBack);
+
+    return () => {
+      window.removeEventListener("popstate", onBack);
+    };
+  }, []);
 
   const { tickets, loading, search, filter, editingTicket } = useSelector(
     (state: any) => state.tickets

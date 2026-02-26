@@ -35,7 +35,7 @@ export default function LoginPage() {
       const user = await login(loginFormData.email, loginFormData.password);
       dispatch(setUser(user));
       toast.success("Login successfully");
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch (err: any) {
       setError("Password or email is incorrect");
     }

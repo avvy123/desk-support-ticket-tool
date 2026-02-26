@@ -30,7 +30,7 @@ export default function SignUpPage() {
         try {
             await signup(formData.firstName, formData.lastName, formData.email, formData.password, role);
             toast.success("Account created successfully");
-            router.push("/login");
+            router.replace("/login");
         } catch (err: any) {
             setError(err.message);
         }

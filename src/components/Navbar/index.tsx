@@ -17,7 +17,7 @@ export default function Navbar() {
   const handleLogout = () => {
     logout();       
     dispatch(clearUser());
-    router.push("/login");
+    router.replace("/login");
     setIsSidebarOpen(false);
   };
 
